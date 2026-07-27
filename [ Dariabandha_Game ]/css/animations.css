@@ -1,0 +1,70 @@
+/* =========================================================================
+   animations.css — keyframes shared across screens
+   ========================================================================= */
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+@keyframes floatY{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-10px); }
+}
+
+@keyframes pulseFade{
+  0%,100%{ opacity:1; }
+  50%{ opacity:.35; }
+}
+
+@keyframes walkBob{
+  0%,100%{ transform:translateZ(10px) translateY(0) rotate(0deg); }
+  50%{ transform:translateZ(10px) translateY(-3px) rotate(-2deg); }
+}
+@keyframes walkShadow{
+  0%,100%{ transform:translateX(-50%) scale(1); opacity:.5; }
+  50%{ transform:translateX(-50%) scale(.82); opacity:.32; }
+}
+
+@keyframes tagPop{
+  0%{ transform:translateZ(10px) scale(1); filter:none; }
+  40%{ transform:translateZ(10px) scale(1.35); filter:saturate(1.6) brightness(1.1); }
+  100%{ transform:translateZ(10px) scale(0); filter:saturate(1.6); opacity:0; }
+}
+
+@keyframes tagFlash{
+  0%{ opacity:0; }
+  30%{ opacity:1; }
+  100%{ opacity:0; }
+}
+
+@keyframes toastIn{
+  from{ opacity:0; transform:translateX(-50%) translateY(-8px) scale(.9); }
+  to{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes countPulse{
+  0%{ transform:scale(.4); opacity:0; }
+  30%{ transform:scale(1.15); opacity:1; }
+  70%{ transform:scale(1); opacity:1; }
+  100%{ transform:scale(.9); opacity:0; }
+}
+
+@keyframes screenIn{
+  from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.screen{ animation:screenIn .35s var(--ease-soft); }
+
+@keyframes cardPress{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(.97); }
+  100%{ transform:scale(1); }
+}
+
+/* Reduced motion: honored automatically via the OS (prefers-reduced-motion)
+   AND manually via Settings → Reduce motion (adds .force-reduced-motion to
+   <body>, see js/ui.js applyReducedMotion). Both collapse every CSS
+   animation/transition to effectively instant. */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+}
+body.force-reduced-motion *, body.force-reduced-motion *::before, body.force-reduced-motion *::after{
+  animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;
+}
