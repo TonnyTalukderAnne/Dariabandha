@@ -1,0 +1,51 @@
+/* =========================================================================
+   characters.css — runner, line guards, daria guard
+   ========================================================================= */
+
+.entity{
+  position:absolute; width:11%; aspect-ratio:1; margin-left:-5.5%; margin-top:-5.5%;
+  transform-style:preserve-3d;
+  transition:left .05s linear, top .05s linear; /* micro-smoothing between rAF frames */
+  z-index:5;
+}
+.entity-shadow{
+  position:absolute; left:50%; bottom:-14%; width:70%; height:22%;
+  background:radial-gradient(ellipse, rgba(58,42,22,.38), transparent 70%);
+  transform:translateX(-50%) translateZ(0);
+  border-radius:50%;
+}
+.entity-body{
+  position:relative; width:100%; height:100%; border-radius:50%;
+  overflow:hidden; background:#fff;
+  border:3px solid var(--player-a);
+  box-shadow:0 0 0 2px #fff, 0 8px 10px rgba(58,42,22,.35);
+  transform:translateZ(10px);
+}
+.entity-body img{ width:100%; height:100%; object-fit:cover; }
+.entity.player-b .entity-body{ border-color:var(--player-b); }
+.entity.guard .entity-body{ border-color:var(--soil); border-style:dashed; }
+
+.entity.walking .entity-body{ animation:walkBob .32s ease-in-out infinite; }
+.entity.walking .entity-shadow{ animation:walkShadow .32s ease-in-out infinite; }
+
+.entity-nametag{
+  position:absolute; left:50%; top:-26%; transform:translateX(-50%);
+  font-size:.5rem; font-weight:800; color:var(--soil);
+  background:rgba(255,255,255,.85); padding:1px 6px; border-radius:8px;
+  white-space:nowrap; pointer-events:none;
+}
+
+.entity.tagged .entity-body{ animation:tagPop .5s var(--ease-snap) forwards; }
+.entity.safe .entity-body{ box-shadow:0 0 0 4px rgba(232,185,58,.6), 0 8px 10px rgba(58,42,22,.35); }
+
+.entity.daria .entity-body{ border-color:var(--soil); box-shadow:0 0 0 3px var(--marigold), 0 8px 10px rgba(58,42,22,.35); }
+
+/* directional facing flip for a subtle "walking toward" feel */
+.entity.face-left .entity-body img{ transform:scaleX(-1); }
+
+.reach-ring{
+  position:absolute; left:50%; top:50%; border-radius:50%;
+  border:2px dashed rgba(58,42,22,.35);
+  transform:translate(-50%,-50%) translateZ(1px);
+  pointer-events:none;
+}
