@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Dariabandha — The Guarded Court</title>
+<meta name="description" content="A traditional Bangladeshi field game, reimagined as a real-time 2-player browser duel.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;600;800&family=Noto+Sans+KR:wght@400;600;800&family=Noto+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/board.css">
+<link rel="stylesheet" href="css/characters.css">
+<link rel="stylesheet" href="css/ui.css">
+<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- ============ inline icon sprite (see assets/icons/NOTE.md for why) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <symbol id="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></symbol>
+  <symbol id="icon-fullscreen" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><ellipse cx="12" cy="12" rx="4" ry="9" stroke="currentColor" stroke-width="2" fill="none"/><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+</defs>
+</svg>
+
+<div id="app">
+
+  <!-- ============ persistent language switcher ============ -->
+  <div class="utility-bar" id="lang-switcher-wrap">
+    <button class="icon-btn" id="lang-btn" aria-haspopup="true" aria-expanded="false" data-t-aria="hud.language">
+      <svg width="18" height="18"><use href="#icon-globe"/></svg>
+    </button>
+    <div id="lang-menu" hidden></div>
+    <span id="lang-btn-label" class="sr-only"></span>
+  </div>
+
+  <!-- ============ Loading ============ -->
+  <section class="screen" id="screen-loading">
+    <div class="loader-ring"></div>
+    <div class="loader-label">Dariabandha</div>
+  </section>
+
+  <!-- ============ Splash ============ -->
+  <section class="screen" id="screen-splash" hidden>
+    <img class="splash-emblem" src="assets/images/emblem.svg" alt="">
+    <h1 class="splash-title" data-t="app.title">Dariabandha</h1>
+    <p class="splash-sub" data-t="app.tagline">The Guarded Court</p>
+    <p class="splash-tap">Tap or press Space to continue</p>
+  </section>
+
+  <!-- ============ Main Menu ============ -->
+  <section class="screen" id="screen-menu" hidden>
+    <div class="panel-card menu-card">
+      <img class="menu-emblem" src="assets/images/emblem.svg" alt="">
+      <h1 class="menu-title" data-t="app.title">Dariabandha</h1>
+      <p class="menu-sub" data-t="app.tagline">The Guarded Court</p>
+      <div class="menu-actions">
+        <button class="btn btn-primary btn-block" id="menu-play-btn" data-t="menu.play">Play</button>
+        <button class="btn btn-ghost btn-block" id="menu-howto-btn" data-t="menu.howToPlay">How To Play</button>
+        <button class="btn btn-ghost btn-block" id="menu-settings-btn" data-t="menu.settings">Settings</button>
+      </div>
+      <div class="menu-footer-links">
+        <button id="menu-about-btn" data-t="menu.about">About</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Player Setup ============ -->
+  <section class="screen" id="screen-setup" hidden>
+    <div class="panel-card setup-card">
+      <h2 class="setup-title" data-t="setup.title">Set Up Your Match</h2>
+      <div class="setup-players">
+        <div class="player-setup-block a">
+          <label class="avatar-upload" for="setup-file-a">
+            <img id="setup-avatar-a" alt="">
+            <span class="avatar-upload-hint" data-t="setup.uploadPhoto">Tap to add photo</span>
+            <input type="file" accept="image/*" id="setup-file-a">
+          </label>
+          <input type="text" class="nickname-input" id="setup-name-a" data-t-placeholder="setup.namePlaceholderA" maxlength="16">
+          <p class="control-hint"><span data-t="setup.controlsA">Moves with</span> <span class="key-chip">↑</span><span class="key-chip">↓</span><span class="key-chip">←</span><span class="key-chip">→</span></p>
+          <p class="control-hint-alt" data-t="setup.controlsAltA"></p>
+        </div>
+        <div class="player-setup-block b">
+          <label class="avatar-upload" for="setup-file-b">
+            <img id="setup-avatar-b" alt="">
+            <span class="avatar-upload-hint" data-t="setup.uploadPhoto">Tap to add photo</span>
+            <input type="file" accept="image/*" id="setup-file-b">
+          </label>
+          <input type="text" class="nickname-input" id="setup-name-b" data-t-placeholder="setup.namePlaceholderB" maxlength="16">
+          <p class="control-hint"><span data-t="setup.controlsB">Moves with</span> <span class="key-chip">W</span><span class="key-chip">A</span><span class="key-chip">S</span><span class="key-chip">D</span></p>
+        </div>
+      </div>
+
+      <div class="setup-options">
+        <div class="setup-option-group">
+          <label data-t="setup.matchLength">First to</label>
+          <div class="option-row" id="setup-length-group">
+            <button class="option-pill" data-value="3">3</button>
+            <button class="option-pill selected" data-value="5">5</button>
+            <button class="option-pill" data-value="7">7</button>
+          </div>
+        </div>
+        <div class="setup-option-group">
+          <label data-t="setup.difficulty">Guard difficulty</label>
+          <div class="option-row" id="setup-diff-group">
+            <button class="option-pill" data-value="easy" data-t="setup.difficultyEasy">Easy</button>
+            <button class="option-pill selected" data-value="normal" data-t="setup.difficultyNormal">Normal</button>
+            <button class="option-pill" data-value="hard" data-t="setup.difficultyHard">Hard</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-actions">
+        <button class="btn btn-ghost" id="setup-back-btn" data-t="setup.backToMenu">Back</button>
+        <button class="btn btn-primary" id="setup-start-btn" data-t="setup.startMatch">Start Match</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Gameplay ============ -->
+  <section class="screen" id="screen-game" hidden>
+    <div class="game-wrap">
+      <div class="hud-top">
+        <div class="score-chip a" id="hud-score-a">
+          <div class="mini-avatar"><img id="hud-avatar-a" alt=""></div>
+          <div>
+            <div class="score-chip-name" id="hud-name-a">Player 1</div>
+            <div class="score-chip-role" id="hud-role-a">Runner</div>
+          </div>
+          <div class="score-chip-score" id="hud-points-a">0</div>
+        </div>
+
+        <div class="round-banner" id="round-banner">Round 1</div>
+
+        <div class="score-chip b" id="hud-score-b">
+          <div class="score-chip-score" id="hud-points-b">0</div>
+          <div>
+            <div class="score-chip-name" id="hud-name-b">Player 2</div>
+            <div class="score-chip-role" id="hud-role-b">Guard</div>
+          </div>
+          <div class="mini-avatar"><img id="hud-avatar-b" alt=""></div>
+        </div>
+
+        <div class="hud-controls">
+          <button class="icon-btn" id="btn-pause" data-t-aria="hud.pause"><svg width="18" height="18"><use href="#icon-pause"/></svg></button>
+          <button class="icon-btn" id="btn-fullscreen" data-t-aria="hud.fullscreen"><svg width="18" height="18"><use href="#icon-fullscreen"/></svg></button>
+        </div>
+      </div>
+
+      <div class="board-column">
+        <div class="court-stage" id="court-container"></div>
+
+        <div class="status-toast" id="status-toast"></div>
+
+        <div class="control-legend">
+          <span><b data-t="game.roleRunner">Runner</b>: ↑ ↓ ← →</span>
+          <span><b>Daria</b>: W A S D</span>
+          <span>Space: <span data-t="game.readyPrompt">ready</span></span>
+        </div>
+
+        <div class="touch-controls" id="touch-controls">
+          <div class="dpad">
+            <button class="up" data-touch="runner-up">▲</button>
+            <button class="left" data-touch="runner-left">◀</button>
+            <button class="right" data-touch="runner-right">▶</button>
+            <button class="down" data-touch="runner-down">▼</button>
+          </div>
+          <div class="dpad">
+            <button class="up" data-touch="daria-up">▲</button>
+            <button class="left" data-touch="daria-left">◀</button>
+            <button class="right" data-touch="daria-right">▶</button>
+            <button class="down" data-touch="daria-down">▼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="countdown-overlay" id="countdown-overlay" hidden>
+      <div class="countdown-num" id="countdown-num">3</div>
+    </div>
+  </section>
+
+  <!-- ============ Victory ============ -->
+  <section class="screen" id="screen-victory" hidden>
+    <div class="panel-card victory-card">
+      <div class="victory-motif"></div>
+      <img id="victory-avatar" class="victory-avatar" alt="">
+      <h1 class="victory-title" id="victory-title">Player 1 wins the match!</h1>
+      <p class="victory-score" id="victory-score">Final score: 5 – 2</p>
+      <div class="victory-actions">
+        <button class="btn btn-primary" id="victory-rematch-btn" data-t="victory.rematch">Rematch</button>
+        <button class="btn btn-ghost" id="victory-menu-btn" data-t="victory.mainMenu">Main Menu</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ Modals ============ -->
+<div class="modal-backdrop" id="modal-tutorial" hidden>
+  <div class="panel-card modal-card">
+    <div class="tutorial-step" id="tutorial-step-content"></div>
+    <div class="tutorial-dots" id="tutorial-dots"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="tutorial-skip-btn" data-t="tutorial.skip">Skip</button>
+      <button class="btn btn-primary" id="tutorial-next-btn" data-t="tutorial.next">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-pause" hidden>
+  <div class="panel-card modal-card">
+    <h2 class="modal-title" data-t="pause.title">Paused</h2>
+    <div class="modal-actions" style="flex-direction:column;">
+      <button class="btn btn-primary btn-block" id="pause-resume-btn" data-t="pause.resume">Resume</button>
+      <button class="btn btn-ghost btn-block" id="pause-restart-btn" data-t="pause.restart">Restart Match</button>
+      <button class="btn btn-ghost btn-block" id="pause-quit-btn" data-t="pause.quit">Quit to Menu</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-settings" hidden>
+  <div class="panel-card modal-card">
+    <button class="icon-btn modal-close" id="settings-close-btn"><svg width="16" height="16"><use href="#icon-close"/></svg></button>
+    <h2 class="modal-title" data-t="settings.title">Settings</h2>
+    <div class="modal-body">
+      <label class="settings-toggle-row" for="settings-motion-toggle">
+        <span data-t="settings.reducedMotion">Reduce motion</span>
+        <input type="checkbox" id="settings-motion-toggle">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-howto" hidden>
+  <div class="panel-card modal-card wide">
+    <button class="icon-btn modal-close" id="howto-close-btn"><svg width="16" height="16"><use href="#icon-close"/></svg></button>
+    <h2 class="modal-title" data-t="howto.title">How To Play</h2>
+    <div class="modal-body">
+      <h4 data-t="howto.objective">Objective</h4>
+      <p data-t="howto.objectiveBody"></p>
+      <h4 data-t="howto.controls">Controls</h4>
+      <p data-t="howto.controlsBody"></p>
+      <h4 data-t="howto.tags">Tagging</h4>
+      <p data-t="howto.tagsBody"></p>
+      <h4 data-t="howto.scoring">Scoring</h4>
+      <p data-t="howto.scoringBody"></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-about" hidden>
+  <div class="panel-card modal-card wide">
+    <button class="icon-btn modal-close" id="about-close-btn"><svg width="16" height="16"><use href="#icon-close"/></svg></button>
+    <h2 class="modal-title" data-t="about.title">About Dariabandha</h2>
+    <div class="modal-body">
+      <p data-t="about.body1"></p>
+      <p data-t="about.body2" style="margin-top:10px;"></p>
+      <p data-t="about.linkNote" style="margin-top:10px;font-style:italic;"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ scripts (classic, non-module) — works identically whether
+     opened directly via file://, or served from GitHub Pages / Netlify /
+     Vercel / any static host, with zero configuration either way ============ -->
+<script src="lang/en.js"></script>
+<script src="lang/bn.js"></script>
+<script src="lang/ko.js"></script>
+<script src="lang/ar.js"></script>
+<script src="lang/es.js"></script>
+
+<script src="js/i18n.js"></script>
+<script src="js/state.js"></script>
+<script src="js/board.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/input.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
